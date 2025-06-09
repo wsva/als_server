@@ -24,8 +24,8 @@ namespace AlsListening {
     class Text {
         Pre: HTMLElement;
         Code: HTMLElement;
-        Language: string; // code的class应该类似language-de，则只取de
-        HighlightText: string; //已经highlight过的原始文本，用于覆盖单词
+        Language: string; // The class of code should be like language-de, so only take "de".
+        HighlightText: string; // highlighted text, used for overwriting words.
 
         constructor(pre: HTMLElement, code: HTMLElement) {
             this.Pre = pre;
@@ -55,7 +55,7 @@ namespace AlsListening {
             }
         }
 
-        //highlight()应该在coverText()前面被调用
+        //highlight() should be called before coverText()
         highlight(text: string): string {
             let newtext = "";
             let colorMap = new Map<string, string>();
@@ -75,9 +75,9 @@ namespace AlsListening {
                     colorMap.set(name, color);
                     colorIndex = (colorIndex + 1) % ColorList.length;
                 }
-                //添加标签
-                //replace函数默认只替换一次，正好满足我们的需要
-                //设置为90%大小，是为了不遮挡其他文字的下划线(使用border制作的下划线)
+                // highlight the names
+                // replace() does only once by default, exactly what we need
+                // Set to 90% size to avoid covering the underline of other text (the underline is created using a border).
                 let newline = line.replace(name,
                     `<span style="font-size: 90%;background-color: ${color};">${name}</span>`);
                 newtext += newline;
@@ -86,19 +86,19 @@ namespace AlsListening {
         }
 
         /**
-         * 解析人名，特征是：
-         * 1，人名在行开头；
-         * 2，人名不能超过3个空格；
-         * 3，人名后面有个英文冒号，冒号后面有个空格。
+         * Parse a person's name based on the following characteristics:
+         * 1. The name appears at the beginning of the line;
+         * 2. The name contains no more than 3 spaces;
+         * 3. The name is followed by a colon (:) and a space.
          */
         parseName(line: string): string {
-            //?表示最短匹配
-            //人名可能包含法语特殊字符，没办法列举
+            //? means non-greedy (shortest) match.
+            // The name may contain special French characters, which cannot be exhaustively listed.
             let mlist = line.match(/^([^:]+): /);
-            //匹配不到的不处理
+            // Do not process if no match is found.
             if (mlist != null) {
                 let name = mlist[1];
-                //多于3个空格的不算人名
+                // Names with more than 3 spaces are not considered valid.
                 let space = name.match(/ /g);
                 if (space == null || space.length < 4) {
                     return name;
@@ -108,8 +108,9 @@ namespace AlsListening {
         }
 
         /**
-         * coverText(0)只会将文本设置为highlight过的文本，不会执行覆盖
-         * 大于等于length长度的单词会被覆盖。若length为0，不进行覆盖
+         * coverText(0) will only set the text as highlighted, without performing any replacement.
+         * Words with length greater than or equal to the specified length will be replaced.
+         * If the length is 0, no replacement will be performed.
          */
         coverText(length: number): void {
             if (length < 1) {
@@ -130,7 +131,8 @@ namespace AlsListening {
         }
 
         /**
-         * 大于等于length长度的单词会被覆盖。若length为0，不进行覆盖
+         * Words with length greater than or equal to the specified length will be replaced.
+         * If the length is 0, no replacement will be performed.
          */
         coverLine(line: string, length: number): string {
             if (length < 1) {
@@ -174,32 +176,32 @@ namespace AlsListening {
             this.Note = new Array<Text>();
 
             for (let i = 0; i < textList.length; i++) {
-                //从第一个开始，所有带language的，都是Transcript
+                // Starting from the first one, all elements with "language" are Transcripts.
                 if (textList[i].Language.length > 0) {
                     this.Transcript.push(textList[i]);
                     continue
                 }
-                //如果都不带language，那么就指定第一个是Transcript
+                // If none have "language," then designate the first one as the Transcript.
                 if (this.Transcript.length == 0) {
                     this.Transcript.push(textList[i]);
                     continue
                 }
-                //其余的都是Note
+                // The rest are Notes.
                 this.Note = textList.slice(i);
                 break
             }
 
-            //设置audio的显示样式
+            // Set the display style of the audio element.
             this.Audio.setAttribute("controlsList", "nodownload");
             //e.playbackRate = 1;
 
-            //使button和audio水平对齐
+            // Align the button and audio horizontally.
             this.Audio.style.marginRight = "1em";
             this.P.style.display = "flex";
             this.P.style.alignItems = "center";
             this.P.style.marginLeft = "2em";
 
-            //设置audio更方便的被选中，从而使用空格控制播放或暂停
+            // Make the audio easier to select so that space-key can be used to play or pause.
             this.Audio.onmouseover = (ev) => {
                 (ev.target as HTMLAudioElement).focus();
             }
@@ -230,18 +232,18 @@ namespace AlsListening {
         let audioList = Array.from(document.getElementsByTagName("audio"));
         audioList.forEach((audio) => {
             let p = audio.parentElement;
-            //audio标签的上一级标签必须是p
+            // The parent element of the audio tag must be a <p> tag.
             if (!p || p.tagName != "P") {
                 return
             }
 
-            //p的前一个元素必须是h1/h2/h3...
+            // The element before the <p> must be an <h1>, <h2>, <h3>, etc.
             let header = p.previousElementSibling;
             if (!header || !header.tagName.match(/^H[1-9]$/)) {
                 return
             }
 
-            //p的后面可能有多个<pre><code></code></pre>
+            // There may be multiple <pre><code></code></pre> elements following the <p>.
             let i = 1;
             let current: Element = p;
             let textList = new Array<Text>();
@@ -268,12 +270,12 @@ namespace AlsListening {
 
         if (print) {
             GlobalList.forEach((e) => {
-                //只显示第一个Transcript，其余的不显示
+                // Only display the first Transcript; hide the rest.
                 /* if (e.Transcript.length > 0) {
                     e.Transcript[0].coverText(0);
                     e.Transcript.slice(1).forEach(e => e.doHide());
                 } */
-                //显示所有的Transcript
+                // Display all Transcripts.
                 e.Transcript.forEach(t => t.coverText(0));
                 e.Note.forEach(t => t.doHide());
             })
@@ -282,25 +284,25 @@ namespace AlsListening {
 
         if (GlobalList.length > 0) {
             let container = document.getElementById("top-container");
-            container?.appendChild(newButton("▶ 全部", `AlsListening.playFrom(0, false, 1)`));
-            //container?.appendChild(newButton("▶ 全部x3", `AlsListening.playFrom(0, false, 3)`));
-            container?.appendChild(newButton("显示/隐藏文本&备注", `AlsListening.reverseHide(-1, true, -1, true)`));
-            container?.appendChild(newButton("覆盖0", `AlsListening.coverText(-1, 0)`));
-            container?.appendChild(newButton("覆盖1", `AlsListening.coverText(-1, 1)`));
-            //container?.appendChild(newButton("覆盖4", `AlsListening.coverText(-1, 4)`));
+            container?.appendChild(newButton("▶ All", `AlsListening.playFrom(0, false, 1)`));
+            //container?.appendChild(newButton("▶ Allx3", `AlsListening.playFrom(0, false, 3)`));
+            container?.appendChild(newButton("Show/Hide Texts&Notes", `AlsListening.reverseHide(-1, true, -1, true)`));
+            container?.appendChild(newButton("Cover-0", `AlsListening.coverText(-1, 0)`));
+            container?.appendChild(newButton("Cover-1", `AlsListening.coverText(-1, 1)`));
+            //container?.appendChild(newButton("Cover-4", `AlsListening.coverText(-1, 4)`));
         }
 
         GlobalList.forEach((e, i) => {
-            e.appendButton(Position.AfterAudio, newButton("▶ 向后", `AlsListening.playFrom(${i}, false, 1)`));
-            //e.appendButton(Position.AfterAudio, newButton("▶ 向后x3", `AlsListening.playFrom(${i}, false, 3)`));
-            e.appendButton(Position.AfterAudio, newButton("▶ 向前", `AlsListening.playFrom(${i}, true, 1)`));
-            //e.appendButton(Position.AfterAudio, newButton("▶ 向前x3", `AlsListening.playFrom(${i}, true, 3)`));
-            e.appendButton(Position.AfterAudio, newButton("覆盖0", `AlsListening.coverText(${i}, 0)`));
-            //e.appendButton(Position.AfterAudio, newButton("覆盖4", `AlsListening.coverText(${i}, 4)`));
+            e.appendButton(Position.AfterAudio, newButton("▶▶", `AlsListening.playFrom(${i}, false, 1)`));
+            //e.appendButton(Position.AfterAudio, newButton("▶▶x3", `AlsListening.playFrom(${i}, false, 3)`));
+            e.appendButton(Position.AfterAudio, newButton("◀◀", `AlsListening.playFrom(${i}, true, 1)`));
+            //e.appendButton(Position.AfterAudio, newButton("◀◀x3", `AlsListening.playFrom(${i}, true, 3)`));
+            e.appendButton(Position.AfterAudio, newButton("Cover-0", `AlsListening.coverText(${i}, 0)`));
+            //e.appendButton(Position.AfterAudio, newButton("Cover-4", `AlsListening.coverText(${i}, 4)`));
 
-            e.Transcript.forEach((t, ti) => e.appendButton(Position.AfterAudio, newButton("文本" + t.Language, `AlsListening.reverseHide(${i}, true, ${ti}, false)`)));
+            e.Transcript.forEach((t, ti) => e.appendButton(Position.AfterAudio, newButton("Text " + t.Language, `AlsListening.reverseHide(${i}, true, ${ti}, false)`)));
             e.Note.length > 0 &&
-                e.appendButton(Position.AfterAudio, newButton("备注", `AlsListening.reverseHide(${i}, false, -1, true)`));
+                e.appendButton(Position.AfterAudio, newButton("Notes", `AlsListening.reverseHide(${i}, false, -1, true)`));
             doHide(-1, true, -1, true);
 
             e.Transcript[0]?.coverText(1);
@@ -324,14 +326,14 @@ namespace AlsListening {
 
         let list = new Array<Data>();
         if (forward) {
-            // 倒序向前播放
+            // Play backwards in reverse order.
             for (let i = 0; i <= index; i++) {
                 for (let j = 1; j <= repeat; j++) {
                     list.push(GlobalList[i]);
                 }
             }
         } else {
-            // 反转数组，这样每次pop最后一个就是从前往后的顺序了
+            // Reverse the array so that each pop returns elements in forward order.
             for (let i = GlobalList.length - 1; i >= index; i--) {
                 for (let j = 1; j <= repeat; j++) {
                     list.push(GlobalList[i]);
@@ -343,7 +345,7 @@ namespace AlsListening {
             d.Transcript[0]?.undoHide();
             d.Audio.scrollIntoView();
             d.Audio.focus();
-            d.Audio.loop = false; // 禁止循环，否则无法触发ended事件
+            d.Audio.loop = false; // Disable looping to allow to trigger the ended event.
             list.length > 0 && d.Audio.addEventListener('ended', playEndedHandler);
             d.Audio.play();
         }
@@ -417,7 +419,7 @@ namespace AlsListening {
         }
     }
 
-    //只有第一个Transcript才执行覆盖
+    // Only the first Transcript will perform the overwrite.
     export function coverText(index: number, length: number): void {
         if (index >= 0) {
             GlobalList[index].Transcript[0]?.coverText(length);
@@ -429,5 +431,5 @@ namespace AlsListening {
     }
 }
 
-// 使用以下命令生成js
+// generate js
 // tsc als_listening.ts --target "es5" --lib "es2015,dom" --downlevelIteration

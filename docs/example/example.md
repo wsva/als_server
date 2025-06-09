@@ -1,4 +1,4 @@
-# ow_wiki有哪些功能？
+# 功能清单
 
 + 使用Markdown语法记笔记。
 + 将Markdown文件实时转为html，通过浏览器访问。
@@ -41,7 +41,7 @@ console.log("hello");
 ![](images/de.jpg)
 
 ## 音频
-<audio controls loop src="images/25_L23_2a_b.mp3"></audio>
+<audio controls loop src="audio/25_L23_2a_b.mp3"></audio>
 
 ## 表格
 | 列1   | 列2   | 列3   |

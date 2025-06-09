@@ -62,7 +62,7 @@ var AlsWordDE;
             this.Typ = this.initTyp();
         }
         Data.prototype.initWList = function (m) {
-            //按顺序查找 W1、W2、W3、W4... 如果有中断，后面的也不要了
+            // Search in order for W1, W2, W3, W4... If there is a break, stop and ignore the rest.
             for (var i = 1;; i++) {
                 if (m.has("W".concat(i))) {
                     this.WList.push(m.get("W".concat(i)) || "");
@@ -71,7 +71,7 @@ var AlsWordDE;
                     break;
                 }
             }
-            //从后往前，去掉空值
+            // Remove empty values from the end going backwards.
             while (true) {
                 if (this.WList[this.WList.length - 1] == "") {
                     this.WList.pop();
@@ -81,7 +81,7 @@ var AlsWordDE;
                 }
             }
         };
-        //类型推断
+        // Type inference
         Data.prototype.initTyp = function () {
             switch (this.WList.length) {
                 case 2:
@@ -165,7 +165,6 @@ var AlsWordDE;
         };
         return Data;
     }());
-    /* 目的是一轮测试完，再进行下一轮，防止随机数不均匀，有些条目总也测试不到的情况 */
     var Test = /** @class */ (function () {
         function Test(Kapitel) {
             this.list = [];
@@ -176,13 +175,10 @@ var AlsWordDE;
                 });
             }
         }
-        //Math.random()挺让人无语的，有时候感觉它根本不随机，所以增加点复杂度
-        //Math.random()精确到小数点后14位
         Test.prototype.random = function () {
             var index = Math.floor(Math.random() * 123456789) % this.list.length;
             var d = this.list[index];
             this.list.splice(index, 1);
-            console.log("本轮测试剩余数量", this.list.length);
             return d;
         };
         Test.prototype.empty = function () {
@@ -200,7 +196,7 @@ var AlsWordDE;
             if (w.Typ != Typ.Fehler) {
                 e.innerHTML = w.html();
                 GlobalList.push(w);
-                //隐藏
+                // hide
                 //e.setAttribute("style", "display: none;");
             }
             else {
@@ -215,14 +211,13 @@ var AlsWordDE;
             buttonSet_1.delete("");
             var buttonList = __spreadArray([], __read(buttonSet_1), false).sort();
             var container_1 = document.getElementById("top-container");
-            container_1 === null || container_1 === void 0 ? void 0 : container_1.appendChild(newButton("词汇测试", ""));
+            container_1 === null || container_1 === void 0 ? void 0 : container_1.appendChild(newButton("Word Test", ""));
             buttonList.forEach(function (v) {
                 container_1 === null || container_1 === void 0 ? void 0 : container_1.appendChild(newButton(v, v));
             });
         }
     }
     AlsWordDE.init = init;
-    //<button class="btn btn-primary btn-lg" onclick = "getWortList()" > 词汇测试 < /button>
     function newButton(text, Kapitel) {
         var button = document.createElement("button");
         button.setAttribute("class", "btn btn-primary btn-lg");
@@ -249,7 +244,6 @@ var AlsWordDE;
         // @ts-ignore
         $("#modal1-next").attr("onclick", "AlsWordDE.nextTest(\"".concat(Kapitel, "\")"));
         if (!GlobalTestMap.has(Kapitel) || ((_a = GlobalTestMap.get(Kapitel)) === null || _a === void 0 ? void 0 : _a.empty())) {
-            console.log("新一轮测试开始");
             GlobalTestMap.set(Kapitel, new Test(Kapitel));
         }
         var d = (_b = GlobalTestMap.get(Kapitel)) === null || _b === void 0 ? void 0 : _b.random();
@@ -259,12 +253,12 @@ var AlsWordDE;
             // @ts-ignore
             $("#modal1-answer").html(d.getAnswer());
             // @ts-ignore
-            $("#modal1-num").html("本轮剩余：" + ((_c = GlobalTestMap.get(Kapitel)) === null || _c === void 0 ? void 0 : _c.left()));
+            $("#modal1-num").html("left: " + ((_c = GlobalTestMap.get(Kapitel)) === null || _c === void 0 ? void 0 : _c.left()));
         }
         // @ts-ignore
         $("#modal1").modal('show');
     }
     AlsWordDE.nextTest = nextTest;
 })(AlsWordDE || (AlsWordDE = {}));
-// 使用以下命令生成js
+// generate js
 // tsc als_word_de.ts --target "es5" --lib "es2015,dom" --downlevelIteration

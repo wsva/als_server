@@ -66,7 +66,8 @@ var AlsQSA;
         };
         return Data;
     }());
-    /* 目的是一轮测试完，再进行下一轮，防止随机数不均匀，有些条目总也测试不到的情况 */
+    // The goal is to complete one round of testing before starting the next, 
+    // in order to prevent randomness from being uneven and causing some items to rarely be tested.
     var Test = /** @class */ (function () {
         function Test() {
             this.list = [];
@@ -76,7 +77,7 @@ var AlsQSA;
             var index = Math.floor(Math.random() * 123456789) % this.list.length;
             var d = this.list[index];
             this.list.splice(index, 1);
-            console.log("本轮测试剩余数量", this.list.length);
+            console.log("left in this round", this.list.length);
             return d;
         };
         Test.prototype.empty = function () {
@@ -105,11 +106,10 @@ var AlsQSA;
         });
         if (GlobalList.length > 0 && showButton) {
             var container = document.getElementById("top-container");
-            container === null || container === void 0 ? void 0 : container.appendChild(newButton("QSA测试"));
+            container === null || container === void 0 ? void 0 : container.appendChild(newButton("QSA Test"));
         }
     }
     AlsQSA.init = init;
-    //<button class="btn btn-primary btn-lg" onclick = "getWortList()" > 词汇测试 < /button>
     function newButton(text) {
         var button = document.createElement("button");
         button.setAttribute("class", "btn btn-primary btn-lg");
@@ -135,7 +135,7 @@ var AlsQSA;
         // @ts-ignore
         $("#modal1-next").attr("onclick", "AlsQSA.nextTest()");
         if (!GlobalTest || GlobalTest.empty()) {
-            console.log("新一轮测试开始");
+            console.log("new round started");
             GlobalTest = new Test();
         }
         var d = GlobalTest.random();
@@ -145,12 +145,12 @@ var AlsQSA;
             // @ts-ignore
             $("#modal1-answer").html(d.getAnswer());
             // @ts-ignore
-            $("#modal1-num").html("本轮剩余：" + GlobalTest.left());
+            $("#modal1-num").html("left: " + GlobalTest.left());
         }
         // @ts-ignore
         $("#modal1").modal('show');
     }
     AlsQSA.nextTest = nextTest;
 })(AlsQSA || (AlsQSA = {}));
-// 使用以下命令生成js
+// generate js
 // tsc als_qsa.ts --target "es5" --lib "es2015,dom" --downlevelIteration

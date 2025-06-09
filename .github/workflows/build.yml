@@ -25,6 +25,7 @@ jobs:
         run: |
           mkdir -p dist/als_server/program
           mv template dist/als_server/program/
+          sed -i 's#"Path": "docs",#"Path": "../docs",#g' config.json
           mv config.json dist/als_server/program/
           mv docs dist/als_server/
 

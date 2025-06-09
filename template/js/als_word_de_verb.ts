@@ -29,7 +29,7 @@ namespace AlsWordDEVerb {
         }
 
         initWList(m: Map<string, string>): void {
-            //按顺序查找 W1、W2、W3、W4... 如果有中断，后面的也不要了
+            // Search in order for W1, W2, W3, W4... If there is a break, stop and ignore the rest.
             for (let i = 1; ; i++) {
                 if (m.has(`W${i}`)) {
                     this.WList.push(m.get(`W${i}`) || "");
@@ -37,7 +37,7 @@ namespace AlsWordDEVerb {
                     break
                 }
             }
-            //从后往前，去掉空值
+            // Remove empty values from the end going backwards.
             while (true) {
                 if (this.WList[this.WList.length - 1] == "") {
                     this.WList.pop();
@@ -78,8 +78,8 @@ namespace AlsWordDEVerb {
         }
     }
 
-
-    /* 目的是一轮测试完，再进行下一轮，防止随机数不均匀，有些条目总也测试不到的情况 */
+    // The goal is to complete one round of testing before starting the next, 
+    // in order to prevent randomness from being uneven and causing some items to rarely be tested.
     class Test {
         list: Data[] = [];
 
@@ -87,13 +87,14 @@ namespace AlsWordDEVerb {
             this.list = Array.from(GlobalList);
         }
 
-        //Math.random()挺让人无语的，有时候感觉它根本不随机，所以增加点复杂度
-        //Math.random()精确到小数点后14位
+        // Math.random() can be frustrating sometimes because it doesn't always feel truly random,
+        // so add some complexity to improve randomness.
+        // Math.random() provides precision up to 14 decimal places.
         random(): Data {
             let index = Math.floor(Math.random() * 123456789) % this.list.length;
             let d = this.list[index];
             this.list.splice(index, 1);
-            console.log("本轮测试剩余数量", this.list.length);
+            console.log("left in this round", this.list.length);
             return d;
         }
 
@@ -115,11 +116,10 @@ namespace AlsWordDEVerb {
         })
         if (GlobalList.length > 0 && showButton) {
             let container = document.getElementById("top-container");
-            container?.appendChild(newButton("动词测试", ""));
+            container?.appendChild(newButton("Verb Test", ""));
         }
     }
 
-    //<button class="btn btn-primary btn-lg" onclick = "getWortList()" > 词汇测试 < /button>
     function newButton(text: string, Kapitel: string): Element {
         let button = document.createElement("button");
         button.setAttribute("class", "btn btn-primary btn-lg");
@@ -147,7 +147,7 @@ namespace AlsWordDEVerb {
         $("#modal1-next").attr("onclick", `AlsWordDEVerb.nextTest("${Kapitel}")`);
 
         if (!GlobalTestMap.has(Kapitel) || GlobalTestMap.get(Kapitel)?.empty()) {
-            console.log("新一轮测试开始");
+            console.log("new round started");
             GlobalTestMap.set(Kapitel, new Test(Kapitel));
         }
         let d = GlobalTestMap.get(Kapitel)?.random();
@@ -157,7 +157,7 @@ namespace AlsWordDEVerb {
             // @ts-ignore
             $("#modal1-answer").html(d.getAnswer());
             // @ts-ignore
-            $("#modal1-num").html("本轮剩余：" + GlobalTestMap.get(Kapitel)?.left());
+            $("#modal1-num").html("left: " + GlobalTestMap.get(Kapitel)?.left());
         }
 
         // @ts-ignore
@@ -165,5 +165,5 @@ namespace AlsWordDEVerb {
     }
 }
 
-// 使用以下命令生成js
+// generate js
 // tsc als_word_de_verb.ts --target "es5" --lib "es2015,dom" --downlevelIteration

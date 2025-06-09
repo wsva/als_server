@@ -53,7 +53,11 @@ namespace AlsGS {
         }
     }
 
-    /* 目的是一轮测试完，再进行下一轮，防止随机数不均匀，有些条目总也测试不到的情况 */
+    /* 
+        Complete one round of testing before starting the next, 
+        in order to prevent randomness from being uneven 
+        and causing some items to rarely be tested.
+    */
     class Test {
         list: Data[] = [];
 
@@ -65,7 +69,7 @@ namespace AlsGS {
             let index = Math.floor(Math.random() * 123456789) % this.list.length;
             let d = this.list[index];
             this.list.splice(index, 1);
-            console.log("本轮测试剩余数量", this.list.length);
+            console.log("left in this round", this.list.length);
             return d;
         }
 
@@ -91,11 +95,10 @@ namespace AlsGS {
         })
         if (GlobalList.length > 0 && showButton) {
             let container = document.getElementById("top-container");
-            container?.appendChild(newButton("GS测试"));
+            container?.appendChild(newButton("GS Test"));
         }
     }
 
-    //<button class="btn btn-primary btn-lg" onclick = "getWortList()" > 词汇测试 < /button>
     function newButton(text: string): Element {
         let button = document.createElement("button");
         button.setAttribute("class", "btn btn-primary btn-lg");
@@ -123,7 +126,7 @@ namespace AlsGS {
         $("#modal1-next").attr("onclick", `AlsGS.nextTest()`);
 
         if (!GlobalTest || GlobalTest.empty()) {
-            console.log("新一轮测试开始");
+            console.log("new round started");
             GlobalTest = new Test();
         }
         let d = GlobalTest.random();
@@ -133,7 +136,7 @@ namespace AlsGS {
             // @ts-ignore
             $("#modal1-answer").html(d.getAnswer());
             // @ts-ignore
-            $("#modal1-num").html("本轮剩余：" + GlobalTest.left());
+            $("#modal1-num").html("left: " + GlobalTest.left());
         }
 
         // @ts-ignore
@@ -141,5 +144,5 @@ namespace AlsGS {
     }
 }
 
-// 使用以下命令生成js
+// generate js
 // tsc als_gs.ts --target "es5" --lib "es2015,dom" --downlevelIteration

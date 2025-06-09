@@ -47,7 +47,7 @@ var AlsListening;
                 this.doHide();
             }
         };
-        //highlight()应该在coverText()前面被调用
+        //highlight() should be called before coverText()
         Text.prototype.highlight = function (text) {
             var _this = this;
             var newtext = "";
@@ -68,28 +68,28 @@ var AlsListening;
                     colorMap.set(name, color);
                     colorIndex = (colorIndex + 1) % ColorList.length;
                 }
-                //添加标签
-                //replace函数默认只替换一次，正好满足我们的需要
-                //设置为90%大小，是为了不遮挡其他文字的下划线(使用border制作的下划线)
+                // highlight the names
+                // replace() does only once by default, exactly what we need
+                // Set to 90% size to avoid covering the underline of other text (the underline is created using a border).
                 var newline = line.replace(name, "<span style=\"font-size: 90%;background-color: ".concat(color, ";\">").concat(name, "</span>"));
                 newtext += newline;
             });
             return newtext;
         };
         /**
-         * 解析人名，特征是：
-         * 1，人名在行开头；
-         * 2，人名不能超过3个空格；
-         * 3，人名后面有个英文冒号，冒号后面有个空格。
+         * Parse a person's name based on the following characteristics:
+         * 1. The name appears at the beginning of the line;
+         * 2. The name contains no more than 3 spaces;
+         * 3. The name is followed by a colon (:) and a space.
          */
         Text.prototype.parseName = function (line) {
-            //?表示最短匹配
-            //人名可能包含法语特殊字符，没办法列举
+            //? means non-greedy (shortest) match.
+            // The name may contain special French characters, which cannot be exhaustively listed.
             var mlist = line.match(/^([^:]+): /);
-            //匹配不到的不处理
+            // Do not process if no match is found.
             if (mlist != null) {
                 var name_1 = mlist[1];
-                //多于3个空格的不算人名
+                // Names with more than 3 spaces are not considered valid.
                 var space = name_1.match(/ /g);
                 if (space == null || space.length < 4) {
                     return name_1;
@@ -98,8 +98,9 @@ var AlsListening;
             return "";
         };
         /**
-         * coverText(0)只会将文本设置为highlight过的文本，不会执行覆盖
-         * 大于等于length长度的单词会被覆盖。若length为0，不进行覆盖
+         * coverText(0) will only set the text as highlighted, without performing any replacement.
+         * Words with length greater than or equal to the specified length will be replaced.
+         * If the length is 0, no replacement will be performed.
          */
         Text.prototype.coverText = function (length) {
             var _this = this;
@@ -121,7 +122,8 @@ var AlsListening;
             this.Code.innerHTML = lineList.join("\n");
         };
         /**
-         * 大于等于length长度的单词会被覆盖。若length为0，不进行覆盖
+         * Words with length greater than or equal to the specified length will be replaced.
+         * If the length is 0, no replacement will be performed.
          */
         Text.prototype.coverLine = function (line, length) {
             if (length < 1) {
@@ -155,29 +157,29 @@ var AlsListening;
             this.Transcript = new Array();
             this.Note = new Array();
             for (var i = 0; i < textList.length; i++) {
-                //从第一个开始，所有带language的，都是Transcript
+                // Starting from the first one, all elements with "language" are Transcripts.
                 if (textList[i].Language.length > 0) {
                     this.Transcript.push(textList[i]);
                     continue;
                 }
-                //如果都不带language，那么就指定第一个是Transcript
+                // If none have "language," then designate the first one as the Transcript.
                 if (this.Transcript.length == 0) {
                     this.Transcript.push(textList[i]);
                     continue;
                 }
-                //其余的都是Note
+                // The rest are Notes.
                 this.Note = textList.slice(i);
                 break;
             }
-            //设置audio的显示样式
+            // Set the display style of the audio element.
             this.Audio.setAttribute("controlsList", "nodownload");
             //e.playbackRate = 1;
-            //使button和audio水平对齐
+            // Align the button and audio horizontally.
             this.Audio.style.marginRight = "1em";
             this.P.style.display = "flex";
             this.P.style.alignItems = "center";
             this.P.style.marginLeft = "2em";
-            //设置audio更方便的被选中，从而使用空格控制播放或暂停
+            // Make the audio easier to select so that space-key can be used to play or pause.
             this.Audio.onmouseover = function (ev) {
                 ev.target.focus();
             };
@@ -207,16 +209,16 @@ var AlsListening;
         var audioList = Array.from(document.getElementsByTagName("audio"));
         audioList.forEach(function (audio) {
             var p = audio.parentElement;
-            //audio标签的上一级标签必须是p
+            // The parent element of the audio tag must be a <p> tag.
             if (!p || p.tagName != "P") {
                 return;
             }
-            //p的前一个元素必须是h1/h2/h3...
+            // The element before the <p> must be an <h1>, <h2>, <h3>, etc.
             var header = p.previousElementSibling;
             if (!header || !header.tagName.match(/^H[1-9]$/)) {
                 return;
             }
-            //p的后面可能有多个<pre><code></code></pre>
+            // There may be multiple <pre><code></code></pre> elements following the <p>.
             var i = 1;
             var current = p;
             var textList = new Array();
@@ -241,12 +243,12 @@ var AlsListening;
         });
         if (print) {
             GlobalList.forEach(function (e) {
-                //只显示第一个Transcript，其余的不显示
+                // Only display the first Transcript; hide the rest.
                 /* if (e.Transcript.length > 0) {
                     e.Transcript[0].coverText(0);
                     e.Transcript.slice(1).forEach(e => e.doHide());
                 } */
-                //显示所有的Transcript
+                // Display all Transcripts.
                 e.Transcript.forEach(function (t) { return t.coverText(0); });
                 e.Note.forEach(function (t) { return t.doHide(); });
             });
@@ -254,24 +256,24 @@ var AlsListening;
         }
         if (GlobalList.length > 0) {
             var container = document.getElementById("top-container");
-            container === null || container === void 0 ? void 0 : container.appendChild(newButton("▶ 全部", "AlsListening.playFrom(0, false, 1)"));
-            //container?.appendChild(newButton("▶ 全部x3", `AlsListening.playFrom(0, false, 3)`));
-            container === null || container === void 0 ? void 0 : container.appendChild(newButton("显示/隐藏文本&备注", "AlsListening.reverseHide(-1, true, -1, true)"));
-            container === null || container === void 0 ? void 0 : container.appendChild(newButton("覆盖0", "AlsListening.coverText(-1, 0)"));
-            container === null || container === void 0 ? void 0 : container.appendChild(newButton("覆盖1", "AlsListening.coverText(-1, 1)"));
-            //container?.appendChild(newButton("覆盖4", `AlsListening.coverText(-1, 4)`));
+            container === null || container === void 0 ? void 0 : container.appendChild(newButton("▶ All", "AlsListening.playFrom(0, false, 1)"));
+            //container?.appendChild(newButton("▶ Allx3", `AlsListening.playFrom(0, false, 3)`));
+            container === null || container === void 0 ? void 0 : container.appendChild(newButton("Show/Hide Texts&Notes", "AlsListening.reverseHide(-1, true, -1, true)"));
+            container === null || container === void 0 ? void 0 : container.appendChild(newButton("Cover-0", "AlsListening.coverText(-1, 0)"));
+            container === null || container === void 0 ? void 0 : container.appendChild(newButton("Cover-1", "AlsListening.coverText(-1, 1)"));
+            //container?.appendChild(newButton("Cover-4", `AlsListening.coverText(-1, 4)`));
         }
         GlobalList.forEach(function (e, i) {
             var _a;
-            e.appendButton(Position.AfterAudio, newButton("▶ 向后", "AlsListening.playFrom(".concat(i, ", false, 1)")));
-            //e.appendButton(Position.AfterAudio, newButton("▶ 向后x3", `AlsListening.playFrom(${i}, false, 3)`));
-            e.appendButton(Position.AfterAudio, newButton("▶ 向前", "AlsListening.playFrom(".concat(i, ", true, 1)")));
-            //e.appendButton(Position.AfterAudio, newButton("▶ 向前x3", `AlsListening.playFrom(${i}, true, 3)`));
-            e.appendButton(Position.AfterAudio, newButton("覆盖0", "AlsListening.coverText(".concat(i, ", 0)")));
-            //e.appendButton(Position.AfterAudio, newButton("覆盖4", `AlsListening.coverText(${i}, 4)`));
-            e.Transcript.forEach(function (t, ti) { return e.appendButton(Position.AfterAudio, newButton("文本" + t.Language, "AlsListening.reverseHide(".concat(i, ", true, ").concat(ti, ", false)"))); });
+            e.appendButton(Position.AfterAudio, newButton("▶▶", "AlsListening.playFrom(".concat(i, ", false, 1)")));
+            //e.appendButton(Position.AfterAudio, newButton("▶▶x3", `AlsListening.playFrom(${i}, false, 3)`));
+            e.appendButton(Position.AfterAudio, newButton("◀◀", "AlsListening.playFrom(".concat(i, ", true, 1)")));
+            //e.appendButton(Position.AfterAudio, newButton("◀◀x3", `AlsListening.playFrom(${i}, true, 3)`));
+            e.appendButton(Position.AfterAudio, newButton("Cover-0", "AlsListening.coverText(".concat(i, ", 0)")));
+            //e.appendButton(Position.AfterAudio, newButton("Cover-4", `AlsListening.coverText(${i}, 4)`));
+            e.Transcript.forEach(function (t, ti) { return e.appendButton(Position.AfterAudio, newButton("Text " + t.Language, "AlsListening.reverseHide(".concat(i, ", true, ").concat(ti, ", false)"))); });
             e.Note.length > 0 &&
-                e.appendButton(Position.AfterAudio, newButton("备注", "AlsListening.reverseHide(".concat(i, ", false, -1, true)")));
+                e.appendButton(Position.AfterAudio, newButton("Notes", "AlsListening.reverseHide(".concat(i, ", false, -1, true)")));
             doHide(-1, true, -1, true);
             (_a = e.Transcript[0]) === null || _a === void 0 ? void 0 : _a.coverText(1);
         });
@@ -292,7 +294,7 @@ var AlsListening;
         repeat = Math.floor(repeat);
         var list = new Array();
         if (forward) {
-            // 倒序向前播放
+            // Play backwards in reverse order.
             for (var i = 0; i <= index; i++) {
                 for (var j = 1; j <= repeat; j++) {
                     list.push(GlobalList[i]);
@@ -300,7 +302,7 @@ var AlsListening;
             }
         }
         else {
-            // 反转数组，这样每次pop最后一个就是从前往后的顺序了
+            // Reverse the array so that each pop returns elements in forward order.
             for (var i = GlobalList.length - 1; i >= index; i--) {
                 for (var j = 1; j <= repeat; j++) {
                     list.push(GlobalList[i]);
@@ -312,7 +314,7 @@ var AlsListening;
             (_a = d.Transcript[0]) === null || _a === void 0 ? void 0 : _a.undoHide();
             d.Audio.scrollIntoView();
             d.Audio.focus();
-            d.Audio.loop = false; // 禁止循环，否则无法触发ended事件
+            d.Audio.loop = false; // Disable looping to allow to trigger the ended event.
             list.length > 0 && d.Audio.addEventListener('ended', playEndedHandler);
             d.Audio.play();
         };
@@ -391,7 +393,7 @@ var AlsListening;
         }
     }
     AlsListening.reverseHide = reverseHide;
-    //只有第一个Transcript才执行覆盖
+    // Only the first Transcript will perform the overwrite.
     function coverText(index, length) {
         var _a;
         if (index >= 0) {
@@ -406,5 +408,5 @@ var AlsListening;
     }
     AlsListening.coverText = coverText;
 })(AlsListening || (AlsListening = {}));
-// 使用以下命令生成js
+// generate js
 // tsc als_listening.ts --target "es5" --lib "es2015,dom" --downlevelIteration
