@@ -33,8 +33,8 @@ spec:
               adduser -u 1000 -G als -D als
               apk add --no-cache git gosu
               git clone https://github.com/wsva/als_server_build
-              chown -R als:als /home/als/als_server
-              gosu als ./als_server/als_server
+              chown -R als:als als_server_build
+              gosu als ./als_server_build/als_server
           ports:
             - containerPort: 443
           volumeMounts:
