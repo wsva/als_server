@@ -1,0 +1,25 @@
+{
+  "ListenPort": "1235",
+  "Https": {
+    "Enable": false,
+    "CrtFile": "",
+    "KeyFile": ""
+  },
+  "DirectoryList": [
+    {
+      "ID": "docs",
+      "Name": "docs",
+      "Path": "docs",
+      "UseChildren": true,
+      "PublicPathList": null
+    }
+  ],
+  "AllowIPList": [
+    {
+      "IPRegexp": "^.*$",
+      "Allow": true,
+      "Comment": ""
+    }
+  ],
+  "DefaultLanguage": "de"
+}
