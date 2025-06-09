@@ -24,10 +24,10 @@ jobs:
       - name: Create output directory
         run: |
           mkdir -p dist/als_server/program
-          mv template dist/als_server/program/
+          cp -r template dist/als_server/program/
           sed -i 's#"Path": "docs",#"Path": "../docs",#g' config.json
-          mv config.json dist/als_server/program/
-          mv docs dist/als_server/
+          cp config.json dist/als_server/program/
+          cp -r docs dist/als_server/
 
       - name: Build for Linux (amd64)
         run: |
@@ -61,3 +61,31 @@ jobs:
           files: dist/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Init repo
+        env:
+          BUILD_REPO_PAT: ${{ secrets.BUILD_REPO_PAT }}
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git clone https://x-access-token:${BUILD_REPO_PAT}@github.com/wsva/als_server_build.git als_server_build
+          mkdir -p empty_dir/kustomize/
+          rsync -av --delete --exclude '.git/' empty_dir/ als_server_build/
+
+      - name: Build repo
+        run: |
+          cp -r template als_server_build/
+          cp deployment_config.json als_server_build/config.json
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o als_server_build/als_server
+          sed -i "s/BUILD_TIME/$(date +"%Y%m%d_%H%M%S")/g" deployment.yaml
+          cp deployment.yaml als_server_build/kustomize/
+
+      - name: Commit repo
+        working-directory: als_server_build
+        run: |
+          git add .
+          git commit -m "Update from workflow: $GITHUB_RUN_ID"
+          git push -u origin main
+          
+          
+        

@@ -1,0 +1,25 @@
+{
+  "ListenPort": "443",
+  "Https": {
+    "Enable": true,
+    "CrtFile": "/ssl/yanansworkshop.site.crt",
+    "KeyFile": "/ssl/yanansworkshop.site.key"
+  },
+  "DirectoryList": [
+    {
+      "ID": "docs",
+      "Name": "docs",
+      "Path": "/docs",
+      "UseChildren": true,
+      "PublicPathList": null
+    }
+  ],
+  "AllowIPList": [
+    {
+      "IPRegexp": "^.*$",
+      "Allow": true,
+      "Comment": ""
+    }
+  ],
+  "DefaultLanguage": "de"
+}
