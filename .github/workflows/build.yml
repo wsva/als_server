@@ -25,19 +25,19 @@ jobs:
         run: |
           mkdir -p dist/als_server/program
           mv template dist/als_server/program/
-          mv docs dist/als_server/program/
           mv config.json dist/als_server/program/
+          mv docs dist/als_server/
 
       - name: Build for Linux (amd64)
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/als_server/program/als_server
-          tar -czvf dist/als_server_linux_amd64.tar.gz dist/als_server
+          tar -czvf dist/als_server_linux_amd64.tar.gz -C dist als_server
           rm -f dist/als_server/program/als_server
 
       - name: Build for macOS (amd64)
         run: |
           CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o dist/als_server/program/als_server
-          tar -czvf dist/als_server_darwin_amd64.tar.gz dist/als_server
+          tar -czvf dist/als_server_darwin_amd64.tar.gz -C dist als_server
           rm -f dist/als_server/program/als_server
 
       - name: Build for Windows (386)
@@ -45,13 +45,13 @@ jobs:
           CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o dist/als_server/program/als_server.exe
           mv start.vbs dist/als_server/program/
           mv stop.bat dist/als_server/program/
-          tar -czvf dist/als_server_windows_386.tar.gz dist/als_server
+          tar -czvf dist/als_server_windows_386.tar.gz -C dist als_server
           rm -f dist/als_server/program/als_server.exe
 
       - name: Build for Windows (amd64)
         run: |
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/als_server/program/als_server.exe
-          tar -czvf dist/als_server_windows_amd64.tar.gz dist/als_server
+          tar -czvf dist/als_server_windows_amd64.tar.gz -C dist als_server
           rm -f dist/als_server/program/als_server.exe
 
       - name: Upload release assets
