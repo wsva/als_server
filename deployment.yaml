@@ -17,9 +17,6 @@ spec:
       annotations:
         build: "BUILD_TIME"
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
       containers:
         - name: server
           image: alpine:3.22.0
