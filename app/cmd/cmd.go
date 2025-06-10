@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -21,7 +22,10 @@ func NewCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 			if ok := InitConfig(); !ok {
 				return
 			}
-			startServer()
+			err := startServer()
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 
