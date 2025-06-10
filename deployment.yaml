@@ -54,7 +54,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: node
+    app: server
   ports:
     - port: 443
       targetPort: 443
