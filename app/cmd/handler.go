@@ -30,6 +30,12 @@ func NewHandler(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		return
 	}
 
+	if urlpath == "/reload_directory_list" {
+		dirList = dir.NewDirList(mainConfig.DirectoryList)
+		io.WriteString(w, "reload complete")
+		return
+	}
+
 	lang := "en"
 	if _, found := query["lang"]; found {
 		lang = query["lang"][0]

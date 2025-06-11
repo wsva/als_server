@@ -97,17 +97,27 @@ func getRootIndexContent() string {
 		}
 		content += fmt.Sprintf("# %v <a class=\"index-a-extra\" href=\"/%v\">open</a>\n",
 			ddir.Name, ddir.ID)
+
+		hasDir := false
+		for _, v1 := range entryList {
+			if utils.IsDir(ddir.Path, v1) {
+				hasDir = true
+				break
+			}
+		}
+
 		addHeader := false
 		for _, v1 := range entryList {
 			if utils.IsDir(ddir.Path, v1) {
 				continue
 			}
-			if !addHeader {
+			if hasDir && !addHeader {
 				content += "## .\n"
 				addHeader = true
 			}
 			content += genIndexLink(v1.Name(), filepath.Join(ddir.ID, v1.Name()), false)
 		}
+
 		for _, v1 := range entryList {
 			if !utils.IsDir(ddir.Path, v1) {
 				continue
