@@ -11,12 +11,12 @@ import (
 )
 
 func genIndexLink(name, urlpath string, isDir bool) string {
-	tCard := `<div class="index-card"><div class="index-card-body">%v</div></div>`
+	tCard := `<div class="index-card" data-tooltip="%v"><div class="index-card-body">%v</div></div>`
 	showName := utils.TemplateExecuteReplacer.Replace(name)
 	if isDir {
 		link := fmt.Sprintf(`<a class="index-link" href="%v?lang=%v">%v</a> `,
 			html.EscapeString(urlpath), mainConfig.DefaultLanguage, showName)
-		return fmt.Sprintf(tCard, link)
+		return fmt.Sprintf(tCard, showName, link)
 	}
 	if name == "favicon.ico" {
 		return ""
@@ -27,7 +27,7 @@ func genIndexLink(name, urlpath string, isDir bool) string {
 		link += fmt.Sprintf(` <a class="index-a-extra" target="_blank" href="%v?pdf&ml=10&mr=10&fs=16&lh=6&po=2">pdf</a>`,
 			html.EscapeString(urlpath))
 	}
-	return fmt.Sprintf(tCard, link)
+	return fmt.Sprintf(tCard, showName, link)
 }
 
 func getIndexContent(realpath, urlpath string) (string, error) {
